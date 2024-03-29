@@ -34,8 +34,7 @@ export default function useHighlightInfo({searchText = '', salt}: PDFProps & { s
                 const tracked = await tracker.track(items as TextItem[], pageIndex, searchText);
                 if (tracked) {
                     const result: HighlightResultInfoType = {
-                        highlightSet: tracker.highlightSet,
-                        pages: tracker.highlightPageIndexSet
+                        highlightMap: tracker.highlightMap,
                     };
                     resMap[key] = lodash.cloneDeep(result);
 

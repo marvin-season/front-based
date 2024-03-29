@@ -3,6 +3,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 import {Document, Page, pdfjs} from "react-pdf";
 import useHighlightInfo from "./useHighlightInfo";
 import {PDFDocumentProxy} from "pdfjs-dist";
+import './index.css'
 
 export type PDFProps = {
     file?: string | Blob | ArrayBuffer | undefined;
@@ -12,11 +13,10 @@ export type PDFProps = {
     page_scale?: number;
 };
 
-export type HighlightSet = Set<string>
+export type HighlightMap = Map<number, number[]>
 
 export type HighlightResultInfoType = {
-    highlightSet: HighlightSet;
-    pages: Set<number>
+    highlightMap: HighlightMap;
 }
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -31,18 +31,16 @@ export const PDFViewer: React.FC<PDFProps> = ({
                                                   width
                                               }) => {
     const pdfDocumentProxyRef = useRef<PDFDocumentProxy>();
-    const [hlSet, setHlSet] = useState<HighlightSet>(new Set([]));
+    const [hlMap, setHlMap] = useState<HighlightMap | null>(null);
+
     // 高亮页下标
-    const [hlPages, setHlPages] = useState<Set<number>>(new Set());
-    // 所有页面下标
     const [allPages, setAllPages] = useState<number[]>([]);
     const {getHighlightInfo} = useHighlightInfo({searchText, salt: typeof file === "string" ? file : ''});
 
 
     const handleHighlightInfo = (res: boolean | HighlightResultInfoType) => {
         if (res && typeof res != "boolean") {
-            setHlSet(res.highlightSet);
-            setHlPages(res.pages);
+            setHlMap(res.highlightMap);
         }
     };
 
@@ -50,29 +48,25 @@ export const PDFViewer: React.FC<PDFProps> = ({
         searchText && getHighlightInfo({pdfDocumentProxy: pdfDocumentProxyRef.current}).then(handleHighlightInfo);
     }, [searchText]);
 
+
     const renderPage = (pageNumber: number) => {
         return <Page
             scale={page_scale}
             width={width}
             pageNumber={pageNumber}
-            renderTextLayer={hlPages.has(pageNumber - 1)}
+            renderTextLayer={!!(hlMap && hlMap.has(pageNumber - 1))}
             onRenderTextLayerSuccess={() => {
-                if (hlPages.has(pageNumber - 1)) {
-                    setTimeout(() => {
-                        const targets = document.querySelectorAll('#text_highlight');
-                        targets[targets.length - 1]?.scrollIntoView({
-                            behavior: 'smooth',
-                            block: "end",
-                        })
+                const elements = document.querySelectorAll(`[data-page-number='${pageNumber}'] .textLayer [role='presentation']`);
+                if (hlMap) {
+                    const targetPageTextItems = hlMap.get(pageNumber - 1);
+                    targetPageTextItems?.forEach(i => {
+                        // 添加预定义的高亮类
+                        elements[i].classList.add('pdf-highlight');
                     })
-                }
-            }}
-            customTextRenderer={(textItem) => {
-                const itemKey = `${textItem.pageIndex}-${textItem.itemIndex}`;
-                if (hlSet.has(itemKey)) {
-                    return `<span style="background:#fff;color: #27af81" id="text_highlight">${textItem.str}</>`;
-                } else {
-                    return "";
+                    const targetTextItemIndex = targetPageTextItems?.at(0);
+                    if (targetTextItemIndex || targetTextItemIndex == 0) {
+                        elements[targetTextItemIndex].scrollIntoView({behavior: 'smooth', block: "center"})
+                    }
                 }
             }}
             renderAnnotationLayer={false}>

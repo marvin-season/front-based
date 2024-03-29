@@ -31,7 +31,7 @@ function PDFTest() {
         }
 
     ])
-    const [url, setUrl] = useState('http://10.0.5.63:31548/smart-vision/ai-application/datasets/ec36ecc1287e483ea893f8cdbd9ab5c2/%E4%B8%8E%E5%87%A4%E8%A1%8C.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AHMKZINMGO355MTE%2F20240329%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240329T055424Z&X-Amz-Expires=10800&X-Amz-SignedHeaders=host&X-Amz-Signature=fd81f7702cbe71fdcbcd658c80b31d6745224e7c5bfeb49d4682d37ef1ee37a4')
+    const [url, setUrl] = useState('/与凤行.pdf')
     const [file, setFile] = useState<Blob | string>(url);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [searchText, setSearchText] = useState('');

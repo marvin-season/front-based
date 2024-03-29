@@ -1,5 +1,5 @@
 import {TextItem} from "pdfjs-dist/types/src/display/api";
-import {HighlightSet} from "./PDFViewer";
+import {HighlightMap} from "./PDFViewer";
 
 type resolveItemNode = {
     value: TextItem[];
@@ -22,7 +22,7 @@ export default class DocumentTracker {
     resolveItemsChain: resolveItemNode; // 头节点
     pointer: resolveItemNode | null = null;
     resolveText = '';
-    highlightSet: HighlightSet = new Set();
+    highlightMap: HighlightMap = new Map();
     highlightPageIndexSet: Set<number> = new Set();
     readonly regex = /[^\u4e00-\u9fa5a-zA-Z0-9]/g;
 
@@ -72,7 +72,11 @@ export default class DocumentTracker {
                     const resolveItems = this.pointer.value;
                     for (let reverseIndex = resolveItems.length - 1; reverseIndex >= 0; reverseIndex--) {
                         str = resolveItems[reverseIndex].str.replace(this.regex, '') + str;
-                        this.highlightSet.add(`${pageIndex}-${reverseIndex}`)
+                        if(this.highlightMap.has(pageIndex)){
+                            this.highlightMap.get(pageIndex)?.push(reverseIndex)
+                        }else {
+                            this.highlightMap.set(pageIndex, [reverseIndex])
+                        }
                         this.highlightPageIndexSet.add(pageIndex)
                         if (str.indexOf(searchText) != -1) {
                             return true
