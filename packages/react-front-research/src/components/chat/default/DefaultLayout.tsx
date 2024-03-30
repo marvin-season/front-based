@@ -1,19 +1,10 @@
-import {AnswerChatItem, ChatItem, CommonPanelRenderType, QuestionChatItem} from "@/components/chat/types.ts";
-import React, {FC, useState} from "react";
+import {AnswerChatItem, QuestionChatItem} from "@/components/chat/types.ts";
+import React, {useState} from "react";
 import {useChatContext} from "@/components/chat/context/ChatContext.tsx";
 import {FileSelector} from "@/components/file";
 import {Button, Flex, Image, Input, message} from "antd";
 import {defaultAnswerPanelRender, defaultQuestionPanelRender} from "@/components/chat/default/DefaultRender.tsx";
 import {UploadOutlined} from "@ant-design/icons";
-
-export const CommonPanel: FC<{
-    chatItem: ChatItem,
-    renderChildren: CommonPanelRenderType,
-}> = ({renderChildren, chatItem}) => {
-    return <>
-        {renderChildren(chatItem)}
-    </>
-}
 
 export function DefaultAnswerPanel({chatItem}: { chatItem: AnswerChatItem }) {
     return defaultAnswerPanelRender(chatItem)

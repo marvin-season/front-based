@@ -1,6 +1,5 @@
 import React from "react";
 import {ChatProps, CommonPanelRenderType} from "@/components/chat/types.ts";
-import {DefaultAnswerPanel, DefaultQuestionPanel} from "@/components/chat/default/DefaultLayout.tsx";
 import {Flex, Image} from "antd";
 import {ReloadOutlined} from "@ant-design/icons";
 import {useChatContext} from "@/components/chat/context/ChatContext.tsx";
@@ -17,11 +16,6 @@ export const linerLayoutRender: ChatProps['renderChatItemLayout'] = (chatList, r
     }
 </>
 
-
-export const defaultAnswerRender: ChatProps['renderAnswerPanel'] = (chatItem) => <DefaultAnswerPanel
-    chatItem={chatItem}/>
-export const defaultQuestionRender: ChatProps['renderQuestionPanel'] = (chatItem) => <DefaultQuestionPanel
-    chatItem={chatItem}/>
 
 export const defaultAnswerPanelRender: CommonPanelRenderType = (chatItem) => {
     const {onReload} = useChatContext();

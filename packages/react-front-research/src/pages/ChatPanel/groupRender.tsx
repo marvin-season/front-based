@@ -3,7 +3,6 @@ import React, {FC, useMemo, useState} from "react";
 import {Flex} from "@/styled";
 // @ts-ignore
 import {groupBy} from "@root/shared";
-import {CommonPanel} from "@/components/chat/default/DefaultLayout.tsx";
 import {defaultAnswerPanelRender, defaultQuestionPanelRender} from "@/components/chat/default/DefaultRender.tsx";
 
 export const groupRenderLayout: ChatProps['renderChatItemLayout'] = (chatList, renderAnswerPanel, renderQuestionPanel) => {
@@ -12,7 +11,6 @@ export const groupRenderLayout: ChatProps['renderChatItemLayout'] = (chatList, r
         return groupBy<ChatItem>(chatList, 'groupId') as ChatItem[][]
     }, [chatList.length]);
 
-    console.log('groupedChatList', groupedChatList)
     return <div>
         {
             groupedChatList.map((groupItem, index) => {
@@ -36,7 +34,7 @@ export const SwiperChatItemPanel: FC<{ list: ChatItem[] }> = ({list}) => {
         {/*回答*/}
         {
             list[currentIndex].role == "answer" && <>
-                <CommonPanel chatItem={list[currentIndex]} renderChildren={defaultAnswerPanelRender}/>
+                {defaultAnswerPanelRender(list[currentIndex])}
                 <Flex>
                     {
                         list.length > 1 && <Flex className={'pl-2 cursor-pointer text-sm text-sky-400 select-none'}>
@@ -51,8 +49,7 @@ export const SwiperChatItemPanel: FC<{ list: ChatItem[] }> = ({list}) => {
 
         {/*问题*/}
         {
-            list[currentIndex].role == "question" &&
-            <CommonPanel chatItem={list[currentIndex]} renderChildren={defaultQuestionPanelRender}></CommonPanel>
+            list[currentIndex].role == "question" && defaultQuestionPanelRender(list[currentIndex])
         }
     </>
 }

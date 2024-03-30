@@ -1,18 +1,18 @@
 import React, {FC} from "react";
 import {ChatProps} from "@/components/chat/types.ts";
 import {
-    defaultAnswerRender,
-    defaultQuestionRender,
+    defaultAnswerPanelRender,
+    defaultQuestionPanelRender,
     linerLayoutRender
 } from "@/components/chat/default/DefaultRender.tsx";
 import {ChatList, UserInput, UseSelectedImage} from "@/components/chat/default/DefaultLayout.tsx";
 import {ChatContext} from "./context/ChatContext";
-import {Divider, Flex} from "antd";
+import {Flex} from "antd";
 
 
 export const Chat: FC<ChatProps> = ({
-                                        renderAnswerPanel = defaultAnswerRender,
-                                        renderQuestionPanel = defaultQuestionRender,
+                                        renderAnswerPanel = defaultAnswerPanelRender,
+                                        renderQuestionPanel = defaultQuestionPanelRender,
                                         renderChatItemLayout = linerLayoutRender,
                                         ...restProps
                                     }) => {
