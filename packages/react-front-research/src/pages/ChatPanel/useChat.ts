@@ -1,10 +1,33 @@
 import {useState} from "react";
 import {BaseAttach, ChatItem, ChatProps} from "@/components/chat/types.ts";
 import {nanoid} from "nanoid";
+import {generateRandomTextWithCallback} from "@/utils/ContentGenerator.ts";
+import {useImmer} from "use-immer";
 
 export const useChat = (): ChatProps => {
-    const [chatList, setChatList] = useState<ChatItem[]>([]);
-    const [baseAttach, setBaseAttach] = useState<BaseAttach>({})
+    const [chatList, setChatList] = useImmer<ChatItem[]>([]);
+    const [baseAttach, setBaseAttach] = useState<BaseAttach>({});
+
+
+    const handleChat = (chatItem?: ChatItem) => {
+        const groupId = nanoid()
+        generateRandomTextWithCallback(({content, id}) => {
+            setChatList(draft => {
+                const find = draft.find(item => item.id === id);
+                if (!find) {
+                    return draft.concat({
+                        id,
+                        content,
+                        role: 'answer',
+                        groupId: chatItem?.groupId || groupId,
+                    })
+                } else {
+                    find.content = find.content.concat(content)
+                }
+            })
+        })
+    }
+
     const onSelectedFile = (files: FileList) => {
         const images: any[] = [];
         for (let index = 0; index < files.length; index++) {
@@ -20,9 +43,7 @@ export const useChat = (): ChatProps => {
         })
     }
     const onReload = (chatItem: ChatItem) => {
-        const clone = structuredClone(chatItem);
-        clone.content = clone.content.concat('reloaded')
-        setChatList(chatList.concat(clone))
+        handleChat(chatItem);
     }
     const onSend = (value: string) => {
         setChatList(chatList.concat({
@@ -33,18 +54,9 @@ export const useChat = (): ChatProps => {
             chatItemAttach: baseAttach
         }))
 
-        setBaseAttach({})
+        setBaseAttach({});
 
-        setTimeout(() => {
-            setChatList(prevState => {
-                return prevState.concat({
-                    id: Date.now().toString(),
-                    content: value,
-                    role: 'answer',
-                    groupId: nanoid(),
-                })
-            })
-        })
+        handleChat()
     }
 
     return {
