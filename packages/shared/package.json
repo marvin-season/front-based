@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "module": "./dist/shared.js",
+  "module": "./dist/index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "./dist"
@@ -15,6 +15,7 @@
   "dependencies": {
   },
   "devDependencies": {
+    "glob": "^10.3.15",
     "typescript": "^5.2.2",
     "vite": "^5.1.4",
     "vite-plugin-dts": "^2.2.0",
