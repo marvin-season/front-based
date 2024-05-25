@@ -1,4 +1,4 @@
-import {sleep} from "@root/shared";
+import { sleep } from "@root/shared";
 
 export const getStream = <T>(data = 'may i help you') => new ReadableStream<T>({
     start: () => {
@@ -19,13 +19,48 @@ export const getStream = <T>(data = 'may i help you') => new ReadableStream<T>({
 
 })
 
+export const getFetchStream = async () => {
+    const request = await fetch('/chat-gpt-moc.txt',)
+    return request.body
+}
+
+const textDecoder = new TextDecoder()
+
 export const composeStream = <T>(stream: ReadableStream<string>, onMessage: (message: T) => void, onFinish?: (message?: T) => void) => {
     stream
         .pipeThrough(new TransformStream({
             transform(chunk, controller) {
-                const data = JSON.parse(chunk)
-                controller.enqueue(data)
+                const s = textDecoder.decode(chunk)
+                s.split('\n').forEach(item => {
+                    item && controller.enqueue(item)
+
+                })
             },
+        }))
+        .pipeThrough(new TransformStream({
+            transform(chunk, controller) {
+                // const data = JSON.parse(chunk)
+                controller.enqueue(chunk.replace(/^data:\s*\r*/, ''))
+            },
+        }))
+        .pipeThrough(new TransformStream({
+            transform(chunk, controller) {
+                try {
+                    const data = JSON.parse(chunk)
+                    controller.enqueue(data)
+                } catch (error) {
+                    console.error(error);
+
+                }
+            },
+        }))
+        .pipeThrough(new TransformStream({
+            transform(chunk, controller){
+                controller.enqueue({
+                    content: chunk.message.content.parts[0],
+                    id: chunk.conversation_id
+                })
+            }
         }))
         .pipeTo(new WritableStream({
             write: onMessage
